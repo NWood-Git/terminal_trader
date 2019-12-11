@@ -5,10 +5,13 @@ import bcrypt
 import requests
 from credentials import PUBLICKEY
 
+class InsufficientFundsError(Exception):
+    # create a new type of exception to check for with try & except
+    pass
 
 class Account:
     tablename = 'accounts'
-    dbpath = DBPATH###should it be self.dbpath in the in the below functions?
+    dbpath = DBPATH###should it be self.dbpath in the in the below functions? - Yes
     PUBLICKEY = PUBLICKEY
 
     def __init__(self, **kwargs):
@@ -132,13 +135,10 @@ class Account:
     def buy(self, ticker, amount):
         bal = self.balance
         
-    class InsufficientFundsError(Exception):
-        # create a new type of exception to check for with try & except
-        pass
 
     def withdraw(self, amount):
         if not isinstance(amount,float):
-            raise TypeError("Withdraw must be a float.")
+            raise TypeError("Withdrawal amount must be a float.")
         if amount < 0.0:
             raise ValueError("Withdrawal amount must be positive.")
         if amount > self.balance:
@@ -146,9 +146,14 @@ class Account:
                                         to perform this transaction.""")
         self.balance -= amount
         self.save()
-
     
-
+    def deposit(self, amount):
+        if not isinstance(amount,float):
+            raise TypeError("The deposit amount must be a float.")
+        if amount < 0.0:
+            raise ValueError("The deposit amount must be positive")
+        self.balance += amount
+        self.save()
 
 
 

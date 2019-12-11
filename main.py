@@ -43,11 +43,9 @@ def main_menu(user):
         view.print_main_menu(user)
         choice = view.main_prompt()
         if choice  == "1":
-            view.show_balance(user)
-            #Check Balance
+            view.show_balance(user)#Check Balance
             pass
-        elif choice == "2":
-            #Withdraw Funds
+        elif choice == "2":#Withdraw Funds
             amount = view.withdrawal_amount()
             try:
                 user.withdraw(amount)#func is in account.py
@@ -56,21 +54,43 @@ def main_menu(user):
                 view.not_positive()
             except account.InsufficientFundsError:
                 view.insufficient_funds()
-        elif choice == "3":
-            #Deposit Funds
-            pass
-        elif choice == "4":
-            #Trading Menu
-            pass
-        elif choice == "5":
-            #Sign Out
+        elif choice == "3":#Deposit Funds
+            amount = view.deposit_amount()
+            try:
+                user.deposit(amount)
+                view.post_deposit(amount, user.balance)
+            except ValueError:
+                view.not_positive()
+        elif choice == "4":#Trading Menu
+            trading_menu(user)
+        elif choice == "5":#Sign Out #exits to first login menu
             break
-        else:
+        else:#loops back
             view.bad_menu_input()
             continue
         
 
-    
+def trading_menu(user):
+    while True:
+        view.print_trading_menu(user)
+        choice = view.trading_menu_prompt()
+        if choice == "1":#GetQuote
+            ticker = view.ticker_prompt()
+            try:
+                quote = get_quote(ticker, PUBLICKEY)
+                print(quote) #should this print from main??? ##pretty print the dictionary?
+            except ConnectionError:
+                view.connection_error()
+        elif choice == "2":#Buy Shares
+            pass
+        elif choice =="3":#Sell Shares
+            pass
+        elif choice == "4":#See Positions
+            pass
+        elif choice == "5":#Exit to Menu
+            break
+        else:
+            view.bad_menu_input()
 
 
 def create_account():
@@ -81,7 +101,8 @@ def create_account():
     password = view.input_password() #this is the start of what will become the password hash
     balance = 0
     email = view.input_email()
-    new_account = Account(first=first, last=last, username=username, balance=balance, email=email) #password_hash=password_hash - not used b/c save in set pw fucntion
+    new_account = Account(first=first, last=last, username=username, balance=balance, email=email)
+    #password_hash=password_hash - not used b/c save in set pw fucntion
     new_account.set_password(password) #creates the password has which is missing in the above line
     new_account.save()#save function to put the new account into the sql db
 
@@ -93,25 +114,29 @@ def login():
     else:
         return None
 
-def get_quote(symbol, public_key):#gets full quote #imported requests
-    REQUEST_URL = "https://cloud.iexapis.com/stable/stock/{symbol}/quote/?token={public_key}"
-    GET_URL = REQUEST_URL.format(symbol=symbol, public_key=public_key)
+def get_quote(ticker, public_key):#gets full quote #imported requests
+    REQUEST_URL = "https://cloud.iexapis.com/stable/stock/{ticker}/quote/?token={public_key}"
+    GET_URL = REQUEST_URL.format(ticker=ticker, public_key=public_key)
     response = requests.get(GET_URL)
     if response.status_code != 200:
         raise ConnectionError
+    # elif response.status_code = 404:
+    #     raise TickerNotFoundError
     data = response.json()
     return data
+
 # # print(account.get_quote("f",PUBLICKEY))
 # x = account.get_quote("f",PUBLICKEY)
 # print(x['latestPrice'])
 
+# class TickerNotFoundError(Exception):
+#     # create a new type of exception to check for with try & except
+#     pass
 
-
-run()
+###############
+# run()
 # create_account() #to test
 # print(login())#njet247 , password #to test #MarSim password
+new_pos_1 = Position(account_pk=1, quantity=10, ticker="f", avg_price=100)
+new_pos_1.save()
 
-# print(account.get_quote("f",PUBLICKEY))
-# x = get_quote("f",PUBLICKEY)
-# print(x['latestPrice'])
-# position.value("f","pk_6121dd71b3dd479a9d12851b3520849b", "latestPrice") #test after creating an intance of position
