@@ -59,5 +59,7 @@ class Position:
     @classmethod
     def from_account_and_ticker(cls, account, ticker):
         pass
-
         #return position object where account_pk = account.pk and ticker = ticker
+
+
+# new_pos_1 = 

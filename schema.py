@@ -30,9 +30,9 @@ def schema(dbpath=DBPATH):
             quantity INTERGER,
             ticker VARCHAR(10) NOT NULL,
             avg_price FLOAT,
-            FOREIGN KEY (account_pk) REFERENCES accounts(pk)),
-            UNIQUE(ticker)"""
-        cursor.execute(SQL)#check syntax for unique
+            FOREIGN KEY (account_pk) REFERENCES accounts(pk),
+            UNIQUE(ticker))"""
+        cursor.execute(SQL)
         
         DROP_SQL = "DROP TABLE IF EXISTS trades"
         cursor.execute(DROP_SQL)

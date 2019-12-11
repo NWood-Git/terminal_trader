@@ -6,6 +6,7 @@ from app.trade import Trade
 from app import view
 import settings
 import bcrypt
+import requests
 from credentials import PUBLICKEY
 
 #to reactivate virtual enviroment: source venv/bin/activate
@@ -32,14 +33,44 @@ def login_menu():#removed user as arg
             pass #needed?
         elif choice == "2":
             account = login()
-            if attempt is True:## needs to be fixed does return true need to get to main menu
-                # print('yay')
-                break #temp
+            if account:## needs to be fixed does return true need to get to main menu
+                return account# print('yay')
             else:
                 pass
 
-def main_menu():
-    'THIS IS THE MAIN MENU'
+def main_menu(user):
+    while True:
+        view.print_main_menu(user)
+        choice = view.main_prompt()
+        if choice  == "1":
+            view.show_balance(user)
+            #Check Balance
+            pass
+        elif choice == "2":
+            #Withdraw Funds
+            amount = view.withdrawal_amount()
+            try:
+                user.withdraw(amount)#func is in account.py
+                view.post_withdrawal(amount, user.balance)
+            except ValueError:
+                view.not_positive()
+            except account.InsufficientFundsError:
+                view.insufficient_funds()
+        elif choice == "3":
+            #Deposit Funds
+            pass
+        elif choice == "4":
+            #Trading Menu
+            pass
+        elif choice == "5":
+            #Sign Out
+            break
+        else:
+            view.bad_menu_input()
+            continue
+        
+
+    
 
 
 def create_account():
@@ -56,20 +87,31 @@ def create_account():
 
 def login(): 
     username, password = view.user_login_attempt()
-    check = Account.login_attempt(username, password)
-    if True:
-        return True
+    loaded_acct = Account.login_attempt(username, password)
+    if loaded_acct:
+        return loaded_acct #True
     else:
         return None
 
-            
+def get_quote(symbol, public_key):#gets full quote #imported requests
+    REQUEST_URL = "https://cloud.iexapis.com/stable/stock/{symbol}/quote/?token={public_key}"
+    GET_URL = REQUEST_URL.format(symbol=symbol, public_key=public_key)
+    response = requests.get(GET_URL)
+    if response.status_code != 200:
+        raise ConnectionError
+    data = response.json()
+    return data
+# # print(account.get_quote("f",PUBLICKEY))
+# x = account.get_quote("f",PUBLICKEY)
+# print(x['latestPrice'])
 
 
+
+run()
 # create_account() #to test
-# print(login())#njet247 , password #to test
-# run()
+# print(login())#njet247 , password #to test #MarSim password
 
 # print(account.get_quote("f",PUBLICKEY))
-# x = account.get_quote("f",PUBLICKEY)
+# x = get_quote("f",PUBLICKEY)
 # print(x['latestPrice'])
 # position.value("f","pk_6121dd71b3dd479a9d12851b3520849b", "latestPrice") #test after creating an intance of position

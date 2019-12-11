@@ -117,32 +117,38 @@ class Account:
     
     @classmethod #NOT COMPLETE - does this belong here?
     def login_attempt(cls, username, password):#password from user input
-        account = cls.from_username(username)
-        if account == None:
+        acct = cls.from_username(username)
+        if acct == None:
             return None
         else:
-            check = account.verify_password(password)
+            check = acct.verify_password(password)
             if check is True:
-                return True
+                # print(acct.first)
+                # print(type(acct))
+                return acct
             else:
                 return None
     
     def buy(self, ticker, amount):
         bal = self.balance
         
+    class InsufficientFundsError(Exception):
+        # create a new type of exception to check for with try & except
+        pass
+
+    def withdraw(self, amount):
+        if not isinstance(amount,float):
+            raise TypeError("Withdraw must be a float.")
+        if amount < 0.0:
+            raise ValueError("Withdrawal amount must be positive.")
+        if amount > self.balance:
+            raise InsufficientFundsError("""Sorry, you have insufficient funds
+                                        to perform this transaction.""")
+        self.balance -= amount
+        self.save()
 
     
-def get_quote(symbol, public_key):#gets full quote #imported requests
-    REQUEST_URL = "https://cloud.iexapis.com/stable/stock/{symbol}/quote/?token={public_key}"
-    GET_URL = REQUEST_URL.format(symbol=symbol, public_key=public_key)
-    response = requests.get(GET_URL)
-    if response.status_code != 200:
-        raise ConnectionError
-    data = response.json()
-    return data
-# # print(account.get_quote("f",PUBLICKEY))
-# x = account.get_quote("f",PUBLICKEY)
-# print(x['latestPrice'])
+
 
 
 

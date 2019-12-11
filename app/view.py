@@ -18,14 +18,14 @@ def bad_login_input():
 
 def goodbye():
     print("    Goodbye!\n")
-#########
+
 def user_login_attempt():
     print("Please enter your credentials. ")
     login_username = input("Username: ")
     login_password = input("Password: ")
     return (login_username, login_password)
 
-
+##################################
 #### This group of view functions are for the create_account function in main ####
 
 def intro_create_acc():
@@ -64,3 +64,39 @@ def input_email():
         else:
             print("Your emails didn't match, please try again.")
 ############################################
+###This group of Functions is related to the main menu####
+def print_main_menu(user):
+    print(f"""Hello, {user.first} {user.last}
+
+    Please select one of the below options:
+    1 Check Balance                                                       
+    2 Withdraw Funds                                                           
+    3 Deposit Funds
+    4 Trading Menu
+    5 Sign Out
+""")
+
+def main_prompt():
+    return input("Your choice:")
+
+def bad_menu_input():
+    print("Your input is not valid. Please select 1,2,3,4, or 5. \n")
+
+def show_balance(user):
+    print(f"Your balance is ${user.balance}")
+
+def withdrawal_amount():
+    amount = float(input("How much would you like to withdraw?: "))
+    return amount
+
+def not_positive():
+    print("""Sorry, you can't withdraw a negative number. 
+        The amount you enter needs to be positive!""")
+
+def insufficient_funds():
+    print("Sorry you have insufficient funds to perform for this transaction.")
+
+def post_withdrawal(amount, balance):
+    print(f"You have withdrawn ${amount} your balance is now {balance}")
+
+
