@@ -33,8 +33,8 @@ class Trade:
         """this inserts the new trades class instance into the database"""
         with sqlite3.connect(self.dbpath) as conn:
             cur = conn.cursor()
-            SQL = f"""INSERT INTO {self.tablename}(account_pk, ticker, quantity, price)
-                    VALUES(:account_pk, :ticker, :quantity, :price)"""
+            SQL = f"""INSERT INTO {self.tablename}(account_pk, ticker, quantity, price, created_at)
+                    VALUES(:account_pk, :ticker, :quantity, :price, :created_at)"""
             cur.execute(SQL, {'account_pk':self.account_pk,'ticker':self.ticker, 'quantity': self.quantity, 'price':self.price,"created_at":self.created_at})
             self.pk = cur.lastrowid
             #is created_at in the right spot?

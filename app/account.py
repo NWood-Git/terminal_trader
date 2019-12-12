@@ -8,6 +8,7 @@ from app import position
 from app.position import Position
 from app import trade
 from app.trade import Trade
+import time
 
 class InsufficientFundsError(Exception):
     # create a new type of exception to check for with try & except
@@ -147,10 +148,11 @@ class Account:
         if self.balance < market_value:
             return None
         else:
-            # now, get the position object for this account and this ticker, so something like
-            # position = Position.from_account_and_ticker(ticker)
+            # now, get the position object for this account and this ticker
             position = Position.from_account_and_ticker(account_pk, ticker)
             # then position.quantity += quantity
+            new_avg_px = ((position.total_quantity*position.avg_price) + (quantity*price)) /(position.total_quantity+quantity)#new line
+            position.avg_price = new_avg_px
             position.total_quantity += quantity #position.quantity is total quantity
             # now, create a new Trade object
             trade = Trade(ticker=ticker, account_pk=self.pk, quantity=quantity, price=price)

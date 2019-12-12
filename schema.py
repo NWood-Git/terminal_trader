@@ -31,7 +31,7 @@ def schema(dbpath=DBPATH):
             ticker VARCHAR(10) NOT NULL,
             avg_price FLOAT,
             FOREIGN KEY (account_pk) REFERENCES accounts(pk));"""
-        cursor.execute(SQL)
+        cursor.execute(SQL)#add UNIQUE(account_pk,ticker)
         
         DROP_SQL = "DROP TABLE IF EXISTS trades"
         cursor.execute(DROP_SQL)
