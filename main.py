@@ -10,6 +10,8 @@ import requests
 from credentials import PUBLICKEY
 
 #to reactivate virtual enviroment: source venv/bin/activate
+#to leave virtual enviroment: deactivate
+
 def run():
     while True:
         user_account = login_menu()  # returns the logged in user or None for quit
@@ -77,12 +79,18 @@ def trading_menu(user):
         if choice == "1":#GetQuote
             ticker = view.ticker_prompt()
             try:
-                quote = get_quote(ticker, PUBLICKEY)
+                quote = user.get_quote(ticker, PUBLICKEY)
                 print(quote) #should this print from main??? ##pretty print the dictionary?
             except ConnectionError:
                 view.connection_error()
-        elif choice == "2":#Buy Shares
-            pass
+        elif choice == "2":#Buy Shares NOT COMPLETE
+            view.buy_intro()
+            ticker = view.ticker_prompt()
+            quantity = view.quantity()
+            if user.buy(ticker, quantity, user.pk):
+                view.sucessful_buy_trade(ticker, quantity)
+            else:
+                view.insufficient_funds()
         elif choice =="3":#Sell Shares
             pass
         elif choice == "4":#See Positions
@@ -114,18 +122,18 @@ def login():
     else:
         return None
 
-def get_quote(ticker, public_key):#gets full quote #imported requests
-    REQUEST_URL = "https://cloud.iexapis.com/stable/stock/{ticker}/quote/?token={public_key}"
-    GET_URL = REQUEST_URL.format(ticker=ticker, public_key=public_key)
-    response = requests.get(GET_URL)
-    if response.status_code != 200:
-        raise ConnectionError
-    # elif response.status_code = 404:
-    #     raise TickerNotFoundError
-    data = response.json()
-    return data
+# def get_quote(ticker, public_key):#gets full quote #imported requests #TODO move to accounts
+#     REQUEST_URL = "https://cloud.iexapis.com/stable/stock/{ticker}/quote/?token={public_key}"
+#     GET_URL = REQUEST_URL.format(ticker=ticker, public_key=public_key)
+#     response = requests.get(GET_URL)
+#     if response.status_code != 200:
+#         raise ConnectionError
+#     # elif response.status_code = 404:
+#     #     raise TickerNotFoundError
+#     data = response.json()
+#     return data
 
-# # print(account.get_quote("f",PUBLICKEY))
+# print(account.get_quote("f",PUBLICKEY))
 # x = account.get_quote("f",PUBLICKEY)
 # print(x['latestPrice'])
 
@@ -134,9 +142,13 @@ def get_quote(ticker, public_key):#gets full quote #imported requests
 #     pass
 
 ###############
-# run()
+run()
 # create_account() #to test
 # print(login())#njet247 , password #to test #MarSim password
-new_pos_1 = Position(account_pk=1, quantity=10, ticker="f", avg_price=100)
-new_pos_1.save()
 
+# new_pos_1 = Position(account_pk=1, quantity=10, ticker="f", avg_price=100) #test done and in DB
+# new_pos_1.save()
+# x = Position.all()
+# x = Position.from_pk(1)
+# x = Position.from_account_and_ticker(1, "f")
+# print(x)

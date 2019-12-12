@@ -4,6 +4,10 @@ import sqlite3
 import bcrypt
 import requests
 from credentials import PUBLICKEY
+from app import position
+from app.position import Position
+from app import trade
+from app.trade import Trade
 
 class InsufficientFundsError(Exception):
     # create a new type of exception to check for with try & except
@@ -40,7 +44,7 @@ class Account:
         with sqlite3.connect(self.dbpath) as conn:
             cur = conn.cursor()
             SQL = f"""INSERT INTO {self.tablename}(first, last, username, password_hash, balance, email)
-                    VALUES(:first, :last, :username, :password_hash, :balance, :email)"""
+                    VALUES(:first, :last, :username, :password_hash, :balance, :email);"""
             cur.execute(SQL, {'first':self.first, 'last':self.last, 'username':self.username, 'password_hash':self.password_hash, 'balance':self.balance, 'email':self.email})
             self.pk = cur.lastrowid
 
@@ -49,14 +53,14 @@ class Account:
         with sqlite3.connect(self.dbpath) as conn:
             cur = conn.cursor()
             SQL = f"""UPDATE {self.tablename} SET first=:first, last=:last, username=:username, 
-            password_hash=:password_hash, balance=:balance, email=:email WHERE pk =:pk"""
+            password_hash=:password_hash, balance=:balance, email=:email WHERE pk =:pk;"""
             cur.execute(SQL, {'pk':self.pk, 'first':self.first, 'last':self.last, 'username':self.username, 'password_hash':self.password_hash, 'balance':self.balance, 'email':self.email})
 
     def delete(self):
         """deleting a user's row from the database"""
         with sqlite3.connect(self.dbpath) as conn:
             cur = connection.cursor
-            SQl = f"DELETE FROM {self.tablename} WHERE pk=:ok;"
+            SQl = f"DELETE FROM {self.tablename} WHERE pk=:pk;"
             cur.execute(SQL, {"pk" : self.pk})
             self.pk = None
 
@@ -132,10 +136,30 @@ class Account:
             else:
                 return None
     
-    def buy(self, ticker, amount):
-        bal = self.balance
-        
-
+    def buy(self, ticker, quantity, account_pk):
+        quantity = int(quantity)
+        quote = self.get_quote(ticker,PUBLICKEY)
+        if quote['iexAskPrice'] != 0:
+            price = float(quote['iexAskPrice'])
+        else:
+            price= float(quote['latestPrice'])
+        market_value = price * quantity
+        if self.balance < market_value:
+            return None
+        else:
+            # now, get the position object for this account and this ticker, so something like
+            # position = Position.from_account_and_ticker(ticker)
+            position = Position.from_account_and_ticker(account_pk, ticker)
+            # then position.quantity += quantity
+            position.total_quantity += quantity #position.quantity is total quantity
+            # now, create a new Trade object
+            trade = Trade(ticker=ticker, account_pk=self.pk, quantity=quantity, price=price)
+            self.balance -= market_value
+            position.save()
+            trade.save()
+            self.save()
+            return True    
+                
     def withdraw(self, amount):
         if not isinstance(amount,float):
             raise TypeError("Withdrawal amount must be a float.")
@@ -155,7 +179,23 @@ class Account:
         self.balance += amount
         self.save()
 
+    def get_quote(self,ticker, public_key):#gets full quote - f string important info
+        REQUEST_URL = "https://cloud.iexapis.com/stable/stock/{ticker}/quote/?token={public_key}"
+        GET_URL = REQUEST_URL.format(ticker=ticker, public_key=public_key)
+        response = requests.get(GET_URL)
+        if response.status_code != 200:
+            raise ConnectionError
+        # elif response.status_code = 404:
+        #     raise TickerNotFoundError
+        data = response.json()
+        return data
+# print(account.get_quote("f",PUBLICKEY))
+# x = account.get_quote("f",PUBLICKEY)
+# print(x['latestPrice'])
 
+# class TickerNotFoundError(Exception):
+#     # create a new type of exception to check for with try & except
+#     pass
 
 # Below 3 lines for classmethod from username just showing how it works
 # x= Account.from_username("JBau24")

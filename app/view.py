@@ -132,8 +132,18 @@ def trading_menu_prompt():
     return input("Your choice: ")
 
 def ticker_prompt():
-    ticker = input("Please input the ticker of the stock whose quote you want to see: ")
+    ticker = input("Please input the ticker: ")
     return ticker.lower()
 
 def connection_error():
     print("Error: either your ticker is invalid or there are connection issues.\n")
+
+def buy_intro():
+    print("You've selected buy.")
+
+def quantity():
+    quantity = input("Please input the quantity for your trade: ")
+    return quantity
+
+def sucessful_buy_trade(ticker, quantity):
+    print(f"You have sucessfully purchased {str(quantity)} of {ticker}.")

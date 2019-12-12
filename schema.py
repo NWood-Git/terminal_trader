@@ -27,11 +27,10 @@ def schema(dbpath=DBPATH):
         SQL = """CREATE TABLE positions(
             pk INTEGER PRIMARY KEY AUTOINCREMENT,
             account_pk INTEGER,
-            quantity INTERGER,
+            total_quantity INTEGER,
             ticker VARCHAR(10) NOT NULL,
             avg_price FLOAT,
-            FOREIGN KEY (account_pk) REFERENCES accounts(pk),
-            UNIQUE(ticker))"""
+            FOREIGN KEY (account_pk) REFERENCES accounts(pk));"""
         cursor.execute(SQL)
         
         DROP_SQL = "DROP TABLE IF EXISTS trades"
@@ -39,9 +38,9 @@ def schema(dbpath=DBPATH):
 
         SQL = """CREATE TABLE trades(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            account_pk INTERGER, 
+            account_pk INTEGER, 
             ticker VARCHAR(10),
-            volume INTEGER,
+            quantity INTEGER,
             price FLOAT,
             created_at FLOAT,
             FOREIGN KEY (account_pk) REFERENCES accounts(pk))"""
