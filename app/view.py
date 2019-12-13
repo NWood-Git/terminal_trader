@@ -141,9 +141,18 @@ def connection_error():
 def buy_intro():
     print("You've selected buy.")
 
+def sell_intro():
+    print("You've selected sell.")
+
 def quantity():
     quantity = input("Please input the quantity for your trade: ")
     return quantity
 
 def sucessful_buy_trade(ticker, quantity):
     print(f"You have sucessfully purchased {str(quantity)} of {ticker}.")
+
+def sucessful_sell_trade(ticker, quantity):
+    print(f"You have sucessfully sold {str(quantity)} of {ticker}.")
+
+def insufficient_shares():
+    print("Sorry you do not have sufficient shares to perform for this transaction.")

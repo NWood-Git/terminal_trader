@@ -14,6 +14,25 @@ class InsufficientFundsError(Exception):
     # create a new type of exception to check for with try & except
     pass
 
+class InsufficientSharesError(Exception):
+    pass
+
+def get_quote(ticker):#gets full quote - f string important info
+    REQUEST_URL = "https://cloud.iexapis.com/stable/stock/{ticker}/quote/?token={public_key}"
+    GET_URL = REQUEST_URL.format(ticker=ticker, public_key=PUBLICKEY)
+    response = requests.get(GET_URL)
+    if response.status_code != 200:
+        raise ConnectionError
+    # elif response.status_code = 404:
+    #     raise TickerNotFoundError
+    data = response.json()
+    return data
+# print(account.get_quote("f"))
+# x = account.get_quote("f")
+# print(x['latestPrice'])
+
+
+
 class Account:
     tablename = 'accounts'
     dbpath = DBPATH###should it be self.dbpath in the in the below functions? - Yes
@@ -137,30 +156,37 @@ class Account:
             else:
                 return None
     
-    def buy(self, ticker, quantity, account_pk):
+    def trade(self, ticker, quantity):
         quantity = int(quantity)
-        quote = self.get_quote(ticker,PUBLICKEY)
+        quote = get_quote(ticker)
         if quote['iexAskPrice'] != 0:
             price = float(quote['iexAskPrice'])
         else:
             price= float(quote['latestPrice'])
         market_value = price * quantity
-        if self.balance < market_value:
-            return None
-        else:
-            # now, get the position object for this account and this ticker
-            position = Position.from_account_and_ticker(account_pk, ticker)
-            # then position.quantity += quantity
-            new_avg_px = ((position.total_quantity*position.avg_price) + (quantity*price)) /(position.total_quantity+quantity)#new line
-            position.avg_price = new_avg_px
-            position.total_quantity += quantity #position.quantity is total quantity
-            # now, create a new Trade object
-            trade = Trade(ticker=ticker, account_pk=self.pk, quantity=quantity, price=price)
-            self.balance -= market_value
-            position.save()
-            trade.save()
-            self.save()
-            return True    
+        position = Position.from_account_and_ticker(self.pk, ticker)
+        if market_value > 0:#BUY
+            if self.balance < market_value:
+                # return None
+                raise InsufficientFundsError
+            else:
+                self.balance -= market_value
+                self.save()
+        else:#SELL so market_value < 0
+            if position.total_quantity < (quantity * -1):#
+                raise InsufficientSharesError
+                # return None
+            else:#where we have more shares than whe are selling 
+                self.balance += market_value * -1
+                self.save()
+        position.total_quantity += quantity #position.quantity is total quantity
+        position.save()
+        # now, create a new Trade object
+        trade = Trade(ticker=ticker, account_pk=self.pk, quantity=quantity, price=price)
+        trade.save()
+        return True 
+
+  
                 
     def withdraw(self, amount):
         if not isinstance(amount,float):
@@ -181,19 +207,6 @@ class Account:
         self.balance += amount
         self.save()
 
-    def get_quote(self,ticker, public_key):#gets full quote - f string important info
-        REQUEST_URL = "https://cloud.iexapis.com/stable/stock/{ticker}/quote/?token={public_key}"
-        GET_URL = REQUEST_URL.format(ticker=ticker, public_key=public_key)
-        response = requests.get(GET_URL)
-        if response.status_code != 200:
-            raise ConnectionError
-        # elif response.status_code = 404:
-        #     raise TickerNotFoundError
-        data = response.json()
-        return data
-# print(account.get_quote("f",PUBLICKEY))
-# x = account.get_quote("f",PUBLICKEY)
-# print(x['latestPrice'])
 
 # class TickerNotFoundError(Exception):
 #     # create a new type of exception to check for with try & except
@@ -203,3 +216,29 @@ class Account:
 # x= Account.from_username("JBau24")
 # print(x)
 # print(x.balance)
+
+
+   # def buy(self, ticker, quantity):
+    #     quantity = int(quantity)
+    #     quote = self.get_quote(ticker,PUBLICKEY)
+    #     if quote['iexAskPrice'] != 0:
+    #         price = float(quote['iexAskPrice'])
+    #     else:
+    #         price= float(quote['latestPrice'])
+    #     market_value = price * quantity
+    #     if self.balance < market_value:
+    #         return None
+    #     else:
+    #         # now, get the position object for this account and this ticker ####REMOVE AVG_PRICE
+    #         position = Position.from_account_and_ticker(self.pk, ticker)
+    #         # then position.quantity += quantity
+    #         new_avg_px = ((position.total_quantity*position.avg_price) + (quantity*price)) /(position.total_quantity+quantity)#new line
+    #         position.avg_price = new_avg_px
+    #         position.total_quantity += quantity #position.quantity is total quantity
+    #         # now, create a new Trade object
+    #         trade = Trade(ticker=ticker, account_pk=self.pk, quantity=quantity, price=price)
+    #         self.balance -= market_value
+    #         position.save()
+    #         trade.save()
+    #         self.save()
+    #         return True   

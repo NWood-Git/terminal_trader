@@ -36,6 +36,7 @@ class Trade:
             SQL = f"""INSERT INTO {self.tablename}(account_pk, ticker, quantity, price, created_at)
                     VALUES(:account_pk, :ticker, :quantity, :price, :created_at)"""
             cur.execute(SQL, {'account_pk':self.account_pk,'ticker':self.ticker, 'quantity': self.quantity, 'price':self.price,"created_at":self.created_at})
+            # cur.execute(SQL, self.__dict__)#may work
             self.pk = cur.lastrowid
             #is created_at in the right spot?
 
@@ -44,7 +45,7 @@ class Trade:
     #     with sqlite3.connect(self.dbpath) as conn:
     #         cur = conn.cursor()
     #         SQL = f"""UPDATE {self.tablename} SET account_pk=:account_pk, 
-    #             ticker=:ticker, quantity=:quantity;"""
+    #             ticker=:ticker, quantity=:quantity WHERE pk=:pk;"""
     #         cur.execute(SQL,{'pk':self.pk, 'account_pk':self.account_pk, 'ticker':self.ticker, 'quantity':self.quantity, 'created_at':self.created_at})
 
     @classmethod
@@ -78,8 +79,6 @@ class Trade:
             cur = conn.cursor()
             cur.execute(SQL, {'account_pk': account_pk})
             rows = cur.fetchall()
-            if row is None:
-                return None
             result = [cls(**row) for row in rows] #returns a list of class instances
     
     @classmethod
@@ -92,6 +91,4 @@ class Trade:
             cur= conn.cursor()
             cur.execute(SQL, {'account_pk':account_pk, 'ticker':ticker})
             rows = cur.fetchall()
-            if row is None:
-                return None
             result = [cls(**row) for row in rows] #returns a list of class instances

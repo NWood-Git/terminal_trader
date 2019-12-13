@@ -29,15 +29,15 @@ def schema(dbpath=DBPATH):
             account_pk INTEGER,
             total_quantity INTEGER,
             ticker VARCHAR(10) NOT NULL,
-            avg_price FLOAT,
-            FOREIGN KEY (account_pk) REFERENCES accounts(pk));"""
-        cursor.execute(SQL)#add UNIQUE(account_pk,ticker)
+            FOREIGN KEY (account_pk) REFERENCES accounts(pk),
+            UNIQUE(account_pk, ticker));"""
+        cursor.execute(SQL)
         
         DROP_SQL = "DROP TABLE IF EXISTS trades"
         cursor.execute(DROP_SQL)
 
         SQL = """CREATE TABLE trades(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            pk INTEGER PRIMARY KEY AUTOINCREMENT,
             account_pk INTEGER, 
             ticker VARCHAR(10),
             quantity INTEGER,

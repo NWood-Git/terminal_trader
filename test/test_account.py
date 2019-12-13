@@ -1,13 +1,19 @@
 import unittest
 from app.account import Account
+from app.position import Position
+from app.trade import Trade
 import schema
 from settings import TESTDBPATH
 import sqlite3
+import seed
 
 #python3 -m unittest discover test 
 
 schema.schema(TESTDBPATH)
 Account.dbpath = TESTDBPATH
+Position.dbpath = TESTDBPATH
+Trade.dbpath = TESTDBPATH
+
 jimid = None #inserted row
 #### need to add tablename to account file 
 #### need to creat class mwth all 
@@ -17,14 +23,16 @@ class TestAccount(unittest.TestCase):
     def setUp(self):
         # runs before every test case
         global jimid
-        with sqlite3.connect(Account.dbpath) as conn:
-            cur = conn.cursor()
-            SQL = f"DELETE FROM {Account.tablename}"
-            cur.execute(SQL)
-            SQL = f"""INSERT INTO {Account.tablename}(first, last, username, password_hash, balance, email) 
-            VALUES ("Jim", "Love", "JimmyLove", "Jim1966", 0, "jimmylove@gmail.com")"""
-            cur.execute(SQL)
-            jimid = cur.lastrowid
+        # with sqlite3.connect(Account.dbpath) as conn:
+        #     cur = conn.cursor()
+        #     SQL = f"DELETE FROM {Account.tablename}"
+        #     cur.execute(SQL)
+        #     SQL = f"""INSERT INTO {Account.tablename}(first, last, username, password_hash, balance, email) 
+        #     VALUES ("Jim", "Love", "JimmyLove", null, 0, "jimmylove@gmail.com")"""
+        #     cur.execute(SQL)
+        #     jimid = cur.lastrowid
+        pks = seed.seed(TESTDBPATH)
+        jimid = pks['jimid']
 
     def test_dummy(self):
         '''if everything is working correctly this will pass'''
@@ -57,3 +65,7 @@ class TestAccount(unittest.TestCase):
         result.save()
         result = Account.all()#using the all fucntion to count rows in DB
         self.assertEqual(result[0].balance,100,"all func populates attributes, checking updated first for row[0] / pk1" )
+
+    def test_account_creation
+#login - creates account saves and can login
+#test - buy and sell - price override (if not using override it should have dec by float)

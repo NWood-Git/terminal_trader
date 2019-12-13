@@ -1,6 +1,6 @@
 from app import account
 from app import position
-from app.account import Account
+from app.account import Account, InsufficientFundsError, InsufficientSharesError
 from app.position import Position
 from app.trade import Trade
 from app import view
@@ -79,7 +79,7 @@ def trading_menu(user):
         if choice == "1":#GetQuote
             ticker = view.ticker_prompt()
             try:
-                quote = user.get_quote(ticker, PUBLICKEY)
+                quote = account.get_quote(ticker)
                 print(quote) #should this print from main??? ##pretty print the dictionary?
             except ConnectionError:
                 view.connection_error()
@@ -87,14 +87,22 @@ def trading_menu(user):
             view.buy_intro()
             ticker = view.ticker_prompt()
             quantity = view.quantity()
-            if user.buy(ticker, quantity, user.pk):
-                view.sucessful_buy_trade(ticker, quantity)
-            else:
+            try:
+                user.trade(ticker, quantity)
+                view.sucessful_buy_trade()
+            except InsufficientFundsError:
                 view.insufficient_funds()
         elif choice =="3":#Sell Shares
-            pass
-        elif choice == "4":#See Positions
-            pass
+            view.sell_intro()
+            ticker = view.ticker_prompt()
+            quantity = int(view.quantity()) * -1
+            try:
+                user.trade(ticker, quantity)
+                view.sucessful_sell_trade(ticker, quantity)
+            except InsufficientSharesError:
+                view.insufficient_shares()
+        elif choice == "4":#See Holdings
+            show_holdings_by_account(user)
         elif choice == "5":#Exit to Menu
             break
         else:
@@ -122,7 +130,13 @@ def login():
     else:
         return None
 
-# def get_quote(ticker, public_key):#gets full quote #imported requests #TODO move to accounts
+def show_holdings_by_account(user):
+    positions = Position.all_from_account(user.pk)
+    for position in positions:
+        if position.total_quantity > 0:
+            print(position.ticker, position.total_quantity, position.value())
+
+# def get_quote(ticker):#gets full quote #imported requests #TODO move to accounts
 #     REQUEST_URL = "https://cloud.iexapis.com/stable/stock/{ticker}/quote/?token={public_key}"
 #     GET_URL = REQUEST_URL.format(ticker=ticker, public_key=public_key)
 #     response = requests.get(GET_URL)
@@ -133,8 +147,8 @@ def login():
 #     data = response.json()
 #     return data
 
-# print(account.get_quote("f",PUBLICKEY))
-# x = account.get_quote("f",PUBLICKEY)
+# print(account.get_quote("f"))
+# x = account.get_quote("f")
 # print(x['latestPrice'])
 
 # class TickerNotFoundError(Exception):
