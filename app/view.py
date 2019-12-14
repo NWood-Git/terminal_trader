@@ -135,8 +135,17 @@ def ticker_prompt():
     ticker = input("Please input the ticker: ")
     return ticker.lower()
 
+def bad_ticker_error():
+    print("Error: There are connection issues.\n")#"Error: either your ticker is invalid or there are connection issues.\n"
+
+def not_number_error():
+    print("Error: Your trade quantity must be a number.\n")
+
+def negative_quantity_error():
+    print("Error: Your trade quantity cannot be negative.")
+
 def connection_error():
-    print("Error: either your ticker is invalid or there are connection issues.\n")
+    print("Error: Your ticker is invalid.\n")
 
 def buy_intro():
     print("You've selected buy.")

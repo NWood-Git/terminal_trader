@@ -80,7 +80,7 @@ def trading_menu(user):
             ticker = view.ticker_prompt()
             try:
                 quote = account.get_quote(ticker)
-                print(quote) #should this print from main??? ##pretty print the dictionary?
+                #print(quote) #shows whole quote as json dictionary
             except ConnectionError:
                 view.connection_error()
         elif choice == "2":#Buy Shares NOT COMPLETE
@@ -88,19 +88,40 @@ def trading_menu(user):
             ticker = view.ticker_prompt()
             quantity = view.quantity()
             try:
-                user.trade(ticker, quantity)
-                view.sucessful_buy_trade()
-            except InsufficientFundsError:
-                view.insufficient_funds()
+                quantity = int(quantity)
+                if quantity < 0:
+                    view.negative_quantity_error()#TODO: fix this so it doesn't send you back to trading menu
+                else:
+                    try:
+                        user.trade(ticker, quantity)
+                        view.sucessful_buy_trade(ticker, quantity)
+                    except InsufficientFundsError:
+                        view.insufficient_funds()
+                    except ConnectionError:
+                        view.connection_error()
+            except ValueError:
+                view.not_number_error()
         elif choice =="3":#Sell Shares
             view.sell_intro()
             ticker = view.ticker_prompt()
-            quantity = int(view.quantity()) * -1
+            quantity = view.quantity()
             try:
-                user.trade(ticker, quantity)
-                view.sucessful_sell_trade(ticker, quantity)
-            except InsufficientSharesError:
-                view.insufficient_shares()
+                quantity = int(quantity)
+                if quantity < 0:
+                    view.negative_quantity_error()#TODO: fix this so it doesn't send you back to trading menu
+                else:
+                    quantity = quantity * -1
+                    try:
+                        user.trade(ticker, quantity)
+                        view.sucessful_sell_trade(ticker, quantity)
+                    except InsufficientSharesError:
+                        view.insufficient_shares()
+                    except ConnectionError:
+                        view.connection_error()
+            except ValueError:
+                view.not_number_error()
+            # except account.NegativeQuantityError:
+            #     view.negative_quantity_error()
         elif choice == "4":#See Holdings
             show_holdings_by_account(user)
         elif choice == "5":#Exit to Menu
@@ -134,26 +155,11 @@ def show_holdings_by_account(user):
     positions = Position.all_from_account(user.pk)
     for position in positions:
         if position.total_quantity > 0:
-            print(position.ticker, position.total_quantity, position.value())
+            print(f"""Ticker: {position.ticker}     Quantity: {position.total_quantity}     Market Value: ${position.value()}""")
+    print("")
 
-# def get_quote(ticker):#gets full quote #imported requests #TODO move to accounts
-#     REQUEST_URL = "https://cloud.iexapis.com/stable/stock/{ticker}/quote/?token={public_key}"
-#     GET_URL = REQUEST_URL.format(ticker=ticker, public_key=public_key)
-#     response = requests.get(GET_URL)
-#     if response.status_code != 200:
-#         raise ConnectionError
-#     # elif response.status_code = 404:
-#     #     raise TickerNotFoundError
-#     data = response.json()
-#     return data
 
-# print(account.get_quote("f"))
-# x = account.get_quote("f")
-# print(x['latestPrice'])
 
-# class TickerNotFoundError(Exception):
-#     # create a new type of exception to check for with try & except
-#     pass
 
 ###############
 run()

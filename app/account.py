@@ -17,6 +17,9 @@ class InsufficientFundsError(Exception):
 class InsufficientSharesError(Exception):
     pass
 
+class NegativeQuantityError(Exception):
+    pass
+
 def get_quote(ticker):#gets full quote - f string important info
     REQUEST_URL = "https://cloud.iexapis.com/stable/stock/{ticker}/quote/?token={public_key}"
     GET_URL = REQUEST_URL.format(ticker=ticker, public_key=PUBLICKEY)
@@ -159,7 +162,7 @@ class Account:
     def trade(self, ticker, quantity):
         quantity = int(quantity)
         quote = get_quote(ticker)
-        if quote['iexAskPrice'] != 0:
+        if quote['iexAskPrice'] != 0 and quote['iexAskPrice'] is not None: ##added the or
             price = float(quote['iexAskPrice'])
         else:
             price= float(quote['latestPrice'])
