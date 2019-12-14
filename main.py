@@ -8,6 +8,7 @@ import settings
 import bcrypt
 import requests
 from credentials import PUBLICKEY
+from time import ctime
 
 #to reactivate virtual enviroment: source venv/bin/activate
 #to leave virtual enviroment: deactivate
@@ -80,7 +81,18 @@ def trading_menu(user):
             ticker = view.ticker_prompt()
             try:
                 quote = account.get_quote(ticker)
-                #print(quote) #shows whole quote as json dictionary
+                # print(quote) #shows whole quote as json dictionary
+                print(f"""
+                Company Name: {quote['companyName']}
+                Symbol: {quote['symbol']} 
+                Latest Price: {quote['latestPrice']}
+                IEX Bid Price: {quote['iexBidPrice']}
+                IEX Ask Price{quote['iexAskPrice']}
+                High: {quote['high']}
+                Low: {quote['low']}
+                52 Week High: {quote['week52High']}
+                52 Week Low: {quote['week52Low']}
+                PE Ratio {quote['peRatio']}\n\n""")
             except ConnectionError:
                 view.connection_error()
         elif choice == "2":#Buy Shares NOT COMPLETE
@@ -124,7 +136,21 @@ def trading_menu(user):
             #     view.negative_quantity_error()
         elif choice == "4":#See Holdings
             show_holdings_by_account(user)
-        elif choice == "5":#Exit to Menu
+        elif choice == "5":#Show Trade History
+            while True:
+                selection = view.trade_history_prompt()
+                if selection.lower() == "quit":
+                    break
+                elif selection.lower() == "total":
+                    show_trades_by_account(user)
+                    break
+                else:
+                    show_trades_by_account_and_ticker(user, selection)
+                    break
+                
+
+
+        elif choice == "6":#Exit to Menu
             break
         else:
             view.bad_menu_input()
@@ -153,13 +179,29 @@ def login():
 
 def show_holdings_by_account(user):
     positions = Position.all_from_account(user.pk)
+    stock_mv = []
     for position in positions:
         if position.total_quantity > 0:
-            print(f"""Ticker: {position.ticker}     Quantity: {position.total_quantity}     Market Value: ${position.value()}""")
-    print("")
+            print(f"""Ticker: {position.ticker.upper()}     Quantity: {position.total_quantity}     Market Value: ${position.value()}""")
+            stock_mv.append(position.value())
+    print(f"\nTotal Market Value of Stock Holdings: ${sum(stock_mv)}")
+    print(f"Cash Balance in Account: ${round(user.balance,2)}")
+    print(f"Total Value of Your Portfolio: {(sum(stock_mv)+round(user.balance,2))}\n\n")
 
+def show_trades_by_account(user):
+    trades = Trade.from_account_pk(user.pk)
+    for trade in trades:
+        print(f"Ticker: {trade.ticker.upper()},  Quantity: {trade.quantity},  Price: ${trade.price}, Market Value: ${trade.price*trade.quantity}, Created At: {ctime(trade.created_at)}")
+    print("\n")
 
-
+def show_trades_by_account_and_ticker(user,ticker):
+    trades = Trade.from_account_and_ticker(user.pk,ticker)
+    if trades == []:
+        view.never_traded_invalid()#TODO: run it through the quote function and include try/except for invalid ticker
+    else:
+        for trade in trades:
+            print(f"Ticker: {trade.ticker.upper()},  Quantity: {trade.quantity},  Price: ${trade.price}, Market Value: ${trade.price*trade.quantity}, Created At: {ctime(trade.created_at)}")
+    print("\n")
 
 ###############
 run()

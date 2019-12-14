@@ -80,6 +80,7 @@ class Trade:
             cur.execute(SQL, {'account_pk': account_pk})
             rows = cur.fetchall()
             result = [cls(**row) for row in rows] #returns a list of class instances
+            return result
     
     @classmethod
     def from_account_and_ticker(cls, account_pk,ticker):
@@ -92,3 +93,4 @@ class Trade:
             cur.execute(SQL, {'account_pk':account_pk, 'ticker':ticker})
             rows = cur.fetchall()
             result = [cls(**row) for row in rows] #returns a list of class instances
+            return result

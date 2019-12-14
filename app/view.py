@@ -83,7 +83,7 @@ def bad_menu_input():
     print("Your input is not valid. Please select 1,2,3,4, or 5. \n")
 
 def show_balance(user):
-    print(f"Your balance is ${user.balance}")
+    print(f"Your balance is ${round(user.balance,2)}")
 
 def withdrawal_amount():#could get rid of limits and do unittest
     while True:
@@ -124,8 +124,9 @@ def print_trading_menu(user):
     1 Get Quote                                                       
     2 Buy Shares                                                           
     3 Sell Shares
-    4 See Positions
-    5 Exit to Previous Menu
+    4 Show Holdings & Balances
+    5 Show Trade History
+    6 Exit to Previous Menu
 """)
 
 def trading_menu_prompt():
@@ -165,3 +166,13 @@ def sucessful_sell_trade(ticker, quantity):
 
 def insufficient_shares():
     print("Sorry you do not have sufficient shares to perform for this transaction.")
+
+def trade_history_prompt():
+    selection = input("""
+        Please enter the symbol of the stock who's trade history you want to see. 
+        Enter "total" to see your complete trade history and "quit" to return to the menu.
+        Your Selection: """)
+    return selection
+
+def never_traded_invalid():#add parameter and include the ticker in the output
+    print("\nSorry you have either never traded this security or the ticker you entered is invalid.")
