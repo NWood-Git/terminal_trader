@@ -23,8 +23,10 @@ def user_login_attempt():
     print("Please enter your credentials. ")
     login_username = input("Username: ")
     login_password = input("Password: ")
-    return (login_username, login_password)
+    return (login_username.lower(), login_password)#changed to lower
 
+def invalid_credentials():
+    print("\nThe credentials you entered are invalid. Please try again./n")
 
 #### This group of view functions are for the create_account function in main ####
 
@@ -42,7 +44,7 @@ def input_last():
 
 def input_username():
     username = input("Please pick an user name: ")
-    return username.strip()
+    return username.strip().lower()
 
 def input_password():
     while True:

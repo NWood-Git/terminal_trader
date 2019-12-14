@@ -162,7 +162,7 @@ class Account:
     def trade(self, ticker, quantity):
         quantity = int(quantity)
         quote = get_quote(ticker)
-        if quote['iexAskPrice'] != 0 and quote['iexAskPrice'] is not None: ##added the or
+        if quote['iexAskPrice'] != 0 and quote['iexAskPrice'] is  not None: ##added the or
             price = float(quote['iexAskPrice'])
         else:
             price= float(quote['latestPrice'])

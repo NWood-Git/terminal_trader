@@ -175,6 +175,7 @@ def login():
     if loaded_acct:
         return loaded_acct #True
     else:
+        view.invalid_credentials()
         return None
 
 def show_holdings_by_account(user):
@@ -191,7 +192,11 @@ def show_holdings_by_account(user):
 def show_trades_by_account(user):
     trades = Trade.from_account_pk(user.pk)
     for trade in trades:
-        print(f"Ticker: {trade.ticker.upper()},  Quantity: {trade.quantity},  Price: ${trade.price}, Market Value: ${trade.price*trade.quantity}, Created At: {ctime(trade.created_at)}")
+        if trade.quantity < 0:
+            trade_type = "Sell"
+        else:
+            trade_type = "Buy"
+        print(f"Trade Type: {trade_type},  Ticker: {trade.ticker.upper()},  Quantity: {abs(trade.quantity)},  Price: ${trade.price},  Market Value: ${abs(trade.price*trade.quantity)},  Created At: {ctime(trade.created_at)}")
     print("\n")
 
 def show_trades_by_account_and_ticker(user,ticker):
@@ -200,7 +205,11 @@ def show_trades_by_account_and_ticker(user,ticker):
         view.never_traded_invalid()#TODO: run it through the quote function and include try/except for invalid ticker
     else:
         for trade in trades:
-            print(f"Ticker: {trade.ticker.upper()},  Quantity: {trade.quantity},  Price: ${trade.price}, Market Value: ${trade.price*trade.quantity}, Created At: {ctime(trade.created_at)}")
+            if trade.quantity < 0:
+                trade_type = "Sell"
+            else:
+                trade_type = "Buy"
+            print(f"Trade Type: {trade_type},  Ticker: {trade.ticker.upper()},  Quantity: {abs(trade.quantity)},  Price: ${trade.price},  Market Value: ${abs(trade.price*trade.quantity)},  Created At: {ctime(trade.created_at)}")
     print("\n")
 
 ###############
