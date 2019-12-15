@@ -187,7 +187,7 @@ class Account:
         # now, create a new Trade object
         trade = Trade(ticker=ticker, account_pk=self.pk, quantity=quantity, price=price)
         trade.save()
-        return True 
+        return abs(market_value) #had return True
 
   
                 

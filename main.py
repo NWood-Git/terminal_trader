@@ -87,7 +87,7 @@ def trading_menu(user):
                 Symbol: {quote['symbol']} 
                 Latest Price: {quote['latestPrice']}
                 IEX Bid Price: {quote['iexBidPrice']}
-                IEX Ask Price{quote['iexAskPrice']}
+                IEX Ask Price: {quote['iexAskPrice']}
                 High: {quote['high']}
                 Low: {quote['low']}
                 52 Week High: {quote['week52High']}
@@ -105,8 +105,8 @@ def trading_menu(user):
                     view.negative_quantity_error()#TODO: fix this so it doesn't send you back to trading menu
                 else:
                     try:
-                        user.trade(ticker, quantity)
-                        view.sucessful_buy_trade(ticker, quantity)
+                        market_value = user.trade(ticker, quantity)
+                        view.sucessful_buy_trade(ticker, quantity, market_value)
                     except InsufficientFundsError:
                         view.insufficient_funds()
                     except ConnectionError:
@@ -124,8 +124,8 @@ def trading_menu(user):
                 else:
                     quantity = quantity * -1
                     try:
-                        user.trade(ticker, quantity)
-                        view.sucessful_sell_trade(ticker, quantity)
+                        market_value = user.trade(ticker, quantity)
+                        view.sucessful_sell_trade(ticker, quantity, market_value)
                     except InsufficientSharesError:
                         view.insufficient_shares()
                     except ConnectionError:

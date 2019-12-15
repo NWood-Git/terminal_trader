@@ -160,11 +160,11 @@ def quantity():
     quantity = input("Please input the quantity for your trade: ")
     return quantity
 
-def sucessful_buy_trade(ticker, quantity):
-    print(f"You have sucessfully purchased {str(quantity)} of {ticker}.")
+def sucessful_buy_trade(ticker, quantity, market_value):
+    print(f"You have sucessfully purchased {str(quantity)} shares of {ticker.upper()} for ${round(market_value,2)}.")
 
-def sucessful_sell_trade(ticker, quantity):
-    print(f"You have sucessfully sold {str(quantity)} of {ticker}.")
+def sucessful_sell_trade(ticker, quantity, market_value):
+    print(f"You have sucessfully sold {str(abs(quantity))} shares of {ticker.upper()} for ${round(abs(market_value),2)}.")
 
 def insufficient_shares():
     print("Sorry you do not have sufficient shares to perform for this transaction.")
