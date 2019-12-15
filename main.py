@@ -209,7 +209,7 @@ def show_trades_by_account_and_ticker(user,ticker):
                 trade_type = "Sell"
             else:
                 trade_type = "Buy"
-            print(f"Trade Type: {trade_type},  Ticker: {trade.ticker.upper()},  Quantity: {abs(trade.quantity)},  Price: ${trade.price},  Market Value: ${abs(trade.price*trade.quantity)},  Created At: {ctime(trade.created_at)}")
+            print(f"Trade Type: {trade_type},  Ticker: {trade.ticker.upper()},  Quantity: {abs(trade.quantity)},  Price: ${trade.price},  Market Value: ${round(abs(trade.price*trade.quantity), 2)},  Created At: {ctime(trade.created_at)}")
     print("\n")
 
 ###############
