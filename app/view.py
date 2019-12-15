@@ -145,7 +145,10 @@ def not_number_error():
     print("Error: Your trade quantity must be a number.\n")
 
 def negative_quantity_error():
-    print("Error: Your trade quantity cannot be negative.")
+    print("Error: Your trade quantity cannot be negative.\n")
+
+def zero_quantity_error():
+    print("Error: Your trade quantity cannot be zero.\n")
 
 def connection_error():
     print("Error: Your ticker is invalid.\n")

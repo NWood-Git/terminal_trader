@@ -103,6 +103,8 @@ def trading_menu(user):
                 quantity = int(quantity)
                 if quantity < 0:
                     view.negative_quantity_error()#TODO: fix this so it doesn't send you back to trading menu
+                elif quantity == 0:
+                    view.zero_quantity_error()
                 else:
                     try:
                         market_value = user.trade(ticker, quantity)
@@ -121,6 +123,8 @@ def trading_menu(user):
                 quantity = int(quantity)
                 if quantity < 0:
                     view.negative_quantity_error()#TODO: fix this so it doesn't send you back to trading menu
+                elif quantity == 0:
+                    view.zero_quantity_error()
                 else:
                     quantity = quantity * -1
                     try:
@@ -196,7 +200,7 @@ def show_trades_by_account(user):
             trade_type = "Sell"
         else:
             trade_type = "Buy"
-        print(f"Trade Type: {trade_type},  Ticker: {trade.ticker.upper()},  Quantity: {abs(trade.quantity)},  Price: ${trade.price},  Market Value: ${abs(trade.price*trade.quantity)},  Created At: {ctime(trade.created_at)}")
+        print(f"Trade Type: {trade_type},  Ticker: {trade.ticker.upper()},  Quantity: {abs(trade.quantity)},  Price: ${trade.price},  Market Value: ${round(abs(trade.price*trade.quantity),2)},  Created At: {ctime(trade.created_at)}")
     print("\n")
 
 def show_trades_by_account_and_ticker(user,ticker):
