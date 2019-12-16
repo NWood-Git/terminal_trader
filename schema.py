@@ -18,6 +18,7 @@ def schema(dbpath=DBPATH):
             password_hash VARCHAR(128),
             balance FLOAT,
             email VARCHAR(128),
+            admin INTEGER,
             UNIQUE(username))"""
         cursor.execute(SQL)
 

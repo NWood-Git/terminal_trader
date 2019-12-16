@@ -106,14 +106,6 @@ class Position:
         market_value = self.total_quantity * price
         return market_value
 
-        
-
-    # def value(self,ticker, public_key, param): ###not working### Test after creating instance
-    #     px = account.get_specific_quote(ticker, public_key, param)
-    #     total_quantity = 100 #self.total_quantity
-    #     market_value = px * total_quantity
-    #     print(market_value)
-
 
 
 # ###old more complicated way to save - do not use

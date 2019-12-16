@@ -68,8 +68,9 @@ def input_email():
 
 ###This group of Functions is related to the main menu####
 def print_main_menu(user):
-    print(f"""Hello, {user.first} {user.last}
-
+    print(f"""
+Hello, {user.first.title()} {user.last.title()}
+    
     Please select one of the below options:
     1 Check Balance                                                       
     2 Withdraw Funds                                                           
@@ -77,6 +78,20 @@ def print_main_menu(user):
     4 Trading Menu
     5 Exit to Menu
 """)
+
+def print_admin_menu(user):
+    print(f"""
+Hello, {user.username.title()}: {user.first.title()} {user.last.title()}
+
+    Please select one of the below options:
+    1 Check Balance                                                       
+    2 Withdraw Funds                                                           
+    3 Deposit Funds
+    4 Trading Menu
+    5 Exit to Menu
+    6 Leaderboard - Admin Function
+    7 Toggle Admin - Admin Function
+    """)
 
 def main_prompt():
     return input("Your choice: ")
@@ -151,7 +166,7 @@ def zero_quantity_error():
     print("Error: Your trade quantity cannot be zero.\n")
 
 def connection_error():
-    print("Error: Your ticker is invalid.\n")
+    print("Error: Your ticker is invalid.")
 
 def buy_intro():
     print("You've selected buy.")
@@ -181,3 +196,9 @@ def trade_history_prompt():
 
 def never_traded_invalid():#add parameter and include the ticker in the output
     print("\nSorry you have either never traded this security or the ticker you entered is invalid.")
+
+class UsernameUnavailableError(Exception):
+    pass
+
+def invalid_username():
+    print("Sorry that username is unavailable. Please try again.\n")

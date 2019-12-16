@@ -9,6 +9,7 @@ from app.position import Position
 from app import trade
 from app.trade import Trade
 import time
+from time import ctime
 
 class InsufficientFundsError(Exception):
     # create a new type of exception to check for with try & except
@@ -49,6 +50,7 @@ class Account:
         self.password_hash = kwargs.get('password_hash')
         self.balance = kwargs.get('balance',0.0)
         self.email = kwargs.get('email')
+        self.admin = kwargs.get('admin',0)#New
     
     def __repr__(self):
         return f"<{type(self).__name__} {self.__dict__}>"
@@ -66,9 +68,11 @@ class Account:
         '''this inserts the class instance into the database'''
         with sqlite3.connect(self.dbpath) as conn:
             cur = conn.cursor()
-            SQL = f"""INSERT INTO {self.tablename}(first, last, username, password_hash, balance, email)
-                    VALUES(:first, :last, :username, :password_hash, :balance, :email);"""
-            cur.execute(SQL, {'first':self.first, 'last':self.last, 'username':self.username, 'password_hash':self.password_hash, 'balance':self.balance, 'email':self.email})
+            if self.username == "admin":#NEW
+                self.admin = 1#NEW
+            SQL = f"""INSERT INTO {self.tablename}(first, last, username, password_hash, balance, email, admin)
+                    VALUES(:first, :last, :username, :password_hash, :balance, :email, :admin);"""
+            cur.execute(SQL, {'first':self.first, 'last':self.last, 'username':self.username, 'password_hash':self.password_hash, 'balance':self.balance, 'email':self.email, 'admin':self.admin})
             self.pk = cur.lastrowid
 
     def update(self):
@@ -189,7 +193,7 @@ class Account:
         trade.save()
         return abs(market_value) #had return True
 
-  
+
                 
     def withdraw(self, amount):
         if not isinstance(amount,float):
@@ -210,10 +214,59 @@ class Account:
         self.balance += amount
         self.save()
 
+    def show_holdings_by_account(self):
+        positions = Position.all_from_account(self.pk)
+        if positions == []:
+            print("\nYou do not have any positions.\n")
+        else:
+            stock_mv = []
+            for position in positions:
+                if position.total_quantity > 0:
+                    print(f"""Ticker: {position.ticker.upper()}     Quantity: {position.total_quantity}     Market Value: ${position.value()}""")
+                    stock_mv.append(position.value())
+            print(f"\nTotal Market Value of Stock Holdings: ${sum(stock_mv)}")
+            print(f"Cash Balance in Account: ${round(self.balance,2)}")
+            print(f"Total Value of Your Portfolio: ${(sum(stock_mv)+round(self.balance,2))}\n\n")
 
-# class TickerNotFoundError(Exception):
-#     # create a new type of exception to check for with try & except
-#     pass
+    def show_trades_by_account(self):
+        trades = Trade.from_account_pk(self.pk)
+        if trades == []:
+            print("\nYou have not made any trades yet.\n")
+        else:
+            for trade in trades:
+                if trade.quantity < 0:
+                    trade_type = "Sell"
+                else:
+                    trade_type = "Buy"
+                print(f"Trade Type: {trade_type},  Ticker: {trade.ticker.upper()},  Quantity: {abs(trade.quantity)},  Price: ${trade.price},  Market Value: ${round(abs(trade.price*trade.quantity),2)},  Created At: {ctime(trade.created_at)}")
+            print("\n")
+
+    def show_trades_by_account_and_ticker(self,ticker):
+        trades = Trade.from_account_and_ticker(self.pk,ticker)
+        if trades == []:
+            view.never_traded_invalid()#TODO: run it through the quote function and include try/except for invalid ticker
+        else:
+            for trade in trades:
+                if trade.quantity < 0:
+                    trade_type = "Sell"
+                else:
+                    trade_type = "Buy"
+                print(f"Trade Type: {trade_type},  Ticker: {trade.ticker.upper()},  Quantity: {abs(trade.quantity)},  Price: ${trade.price},  Market Value: ${round(abs(trade.price*trade.quantity), 2)},  Created At: {ctime(trade.created_at)}")
+        print("\n")
+
+    def leaderboard_stats_by_acct(self, account_pk, username):
+        positions = Position.all_from_account(account_pk)
+        stock_mv = []
+        for x in positions:
+            if x.total_quantity > 0:
+                stock_mv.append(x.value())
+        print(f"Account pk: {account_pk}, Username: {username}, Total Stock Value: ${sum(stock_mv)}, Cash Balance: ${round(self.balance,2)}, Total Portfolio Value: ${(sum(stock_mv)+round(self.balance,2))}")
+
+
+
+
+
+
 
 # Below 3 lines for classmethod from username just showing how it works
 # x= Account.from_username("JBau24")
