@@ -202,3 +202,29 @@ class UsernameUnavailableError(Exception):
 
 def invalid_username():
     print("Sorry that username is unavailable. Please try again.\n")
+
+def select_username():
+    result = input("Please input the username where you want to toggle admin: ")
+    return result.strip().lower()
+
+def toggle():
+    print("""
+    Enter 1 to toggle admin on and enter 0 to toggle admin off.
+    Enter 'q' to exit to exit to the previous menu.""")
+    choice = input("Your choice: ")
+    return choice.strip().lower()
+
+def admin_on(username):
+    print(f'User, {username}, currently has adminstrator priviledges.')
+
+def admin_off(username):
+    print(f'User, {username}, does not currently have adminstrator priviledges.')
+
+def admin_switched_on(username):
+    print(f'Adminstrator priviledges have been turned ON for {username}.')
+
+def admin_switched_off(username):
+    print(f'Adminstrator priviledges have been turned OFF for {username}.')
+
+def invalid_admin_choice():
+    print("Sorry, your selection is invalid, please try again.\n")

@@ -80,8 +80,8 @@ class Account:
         with sqlite3.connect(self.dbpath) as conn:
             cur = conn.cursor()
             SQL = f"""UPDATE {self.tablename} SET first=:first, last=:last, username=:username, 
-            password_hash=:password_hash, balance=:balance, email=:email WHERE pk =:pk;"""
-            cur.execute(SQL, {'pk':self.pk, 'first':self.first, 'last':self.last, 'username':self.username, 'password_hash':self.password_hash, 'balance':self.balance, 'email':self.email})
+            password_hash=:password_hash, balance=:balance, email=:email, admin=:admin WHERE pk =:pk;"""
+            cur.execute(SQL, {'pk':self.pk, 'first':self.first, 'last':self.last, 'username':self.username, 'password_hash':self.password_hash, 'balance':self.balance, 'email':self.email, 'admin':self.admin})
 
     def delete(self):
         """deleting a user's row from the database"""
@@ -149,7 +149,7 @@ class Account:
             result = cls(**row)
             return result #result is returning a class instance
     
-    @classmethod #NOT COMPLETE - does this belong here?
+    @classmethod
     def login_attempt(cls, username, password):#password from user input
         acct = cls.from_username(username)
         if acct == None:

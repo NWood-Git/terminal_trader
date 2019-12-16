@@ -82,7 +82,8 @@ def main_menu(user):
                 view.bad_menu_input()
         elif choice == "7":
             if user.username == 'admin':
-                print("You can see choice 7 because you are an admin.")
+                username = view.select_username()
+                toggle_admin(username)
             else:
                 view.bad_menu_input()
         else:#loops back
@@ -208,42 +209,30 @@ def admin_leaderboard():
     for item in account_username_pk_list:
         Account.leaderboard_stats_by_acct(item[0], item[1], item[2])
 
+def toggle_admin(username):
+    acct = Account.from_username(username)
+    if acct.admin == 1:
+        view.admin_on(username)
+    elif acct.admin == 0:
+        view.admin_off(username)
+    while True:
+        choice = view.toggle()
+        if choice == '1':
+            acct.admin = 1
+            acct.save()
+            view.admin_switched_on(username)
+        elif choice == '0':
+            acct.admin = 0
+            view.admin_switched_off(username)
+            acct.save()
+        elif choice == 'q':
+            break
+        else:
+            invalid_admin_choice()
 
 
 
-# def show_holdings_by_account(user):
-#     positions = Position.all_from_account(user.pk)
-#     stock_mv = []
-#     for position in positions:
-#         if position.total_quantity > 0:
-#             print(f"""Ticker: {position.ticker.upper()}     Quantity: {position.total_quantity}     Market Value: ${position.value()}""")
-#             stock_mv.append(position.value())
-#     print(f"\nTotal Market Value of Stock Holdings: ${sum(stock_mv)}")
-#     print(f"Cash Balance in Account: ${round(user.balance,2)}")
-#     print(f"Total Value of Your Portfolio: {(sum(stock_mv)+round(user.balance,2))}\n\n")
 
-# def show_trades_by_account(user):
-#     trades = Trade.from_account_pk(user.pk)
-#     for trade in trades:
-#         if trade.quantity < 0:
-#             trade_type = "Sell"
-#         else:
-#             trade_type = "Buy"
-#         print(f"Trade Type: {trade_type},  Ticker: {trade.ticker.upper()},  Quantity: {abs(trade.quantity)},  Price: ${trade.price},  Market Value: ${round(abs(trade.price*trade.quantity),2)},  Created At: {ctime(trade.created_at)}")
-#     print("\n")
-
-# def show_trades_by_account_and_ticker(user,ticker):
-#     trades = Trade.from_account_and_ticker(user.pk,ticker)
-#     if trades == []:
-#         view.never_traded_invalid()#TODO: run it through the quote function and include try/except for invalid ticker
-#     else:
-#         for trade in trades:
-#             if trade.quantity < 0:
-#                 trade_type = "Sell"
-#             else:
-#                 trade_type = "Buy"
-#             print(f"Trade Type: {trade_type},  Ticker: {trade.ticker.upper()},  Quantity: {abs(trade.quantity)},  Price: ${trade.price},  Market Value: ${round(abs(trade.price*trade.quantity), 2)},  Created At: {ctime(trade.created_at)}")
-#     print("\n")
 
 ###############
 run()
