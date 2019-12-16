@@ -53,7 +53,7 @@ class Trade:
         SQL = f"SELECT * FROM {cls.tablename};"
         with sqlite3.connect(cls.dbpath) as conn:
             conn.row_factory = sqlite3.Row
-            cur = con.cursor()
+            cur = conn.cursor()
             rows = cur.fetchall()
             result = [cls(**row) for row in rows]
             return result #returns a list of class instances

@@ -22,6 +22,6 @@ def seed(dbpath = TESTDBPATH):
         #The below is new
         SQL = f"""INSERT INTO trades(ticker, account_pk, quantity, price)
                 VALUES('aapl', {jimid}, 10, 100);"""
-        trade_pk = cur.lastrowid
         cur.execute(SQL)
-        return {"jimid":jimid, "position_pk" : position_pk}## if this is not returned all tests fail!
+        trade_pk = cur.lastrowid
+        return {"jimid":jimid, "position_pk" : position_pk, "trade_pk" : trade_pk}## if this is not returned all tests fail!

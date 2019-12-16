@@ -50,8 +50,8 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(result.email,"jimmylove@gmail.com")
         self.assertIsNone(Account.from_pk(0), "from_pk returns None for bad pk")
     
-    # def test_save(self):#do we test this or do we test the individual parts
-    def test_insert(self):
+    # Test Save shown in 2 pieces
+    def test_insert(self):#Tests Save - insert function
         tester = Account(first='Homer', last='Simpson', username='HSimp', password_hash="password", balance=0,email='the_simpsons@fox.com')
         tester.save()
         result = Account.all()#using the all fucntion to count rows in DB
@@ -59,7 +59,7 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(result[0].first,"Jim","all func populates attributes, checking first for row[0] / pk1" )
         self.assertEqual(result[1].email,"the_simpsons@fox.com","all func populates attributes, checking email for row[1] / pk2" )
 
-    def test_update(self):
+    def test_update(self):#Tests Save - update function
         result = Account.from_pk(jimid)
         result.balance = 100
         result.save()

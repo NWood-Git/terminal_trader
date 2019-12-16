@@ -272,28 +272,3 @@ class Account:
 # print(x)
 # print(x.balance)
 
-
-   # def buy(self, ticker, quantity):
-    #     quantity = int(quantity)
-    #     quote = self.get_quote(ticker,PUBLICKEY)
-    #     if quote['iexAskPrice'] != 0:
-    #         price = float(quote['iexAskPrice'])
-    #     else:
-    #         price= float(quote['latestPrice'])
-    #     market_value = price * quantity
-    #     if self.balance < market_value:
-    #         return None
-    #     else:
-    #         # now, get the position object for this account and this ticker ####REMOVE AVG_PRICE
-    #         position = Position.from_account_and_ticker(self.pk, ticker)
-    #         # then position.quantity += quantity
-    #         new_avg_px = ((position.total_quantity*position.avg_price) + (quantity*price)) /(position.total_quantity+quantity)#new line
-    #         position.avg_price = new_avg_px
-    #         position.total_quantity += quantity #position.quantity is total quantity
-    #         # now, create a new Trade object
-    #         trade = Trade(ticker=ticker, account_pk=self.pk, quantity=quantity, price=price)
-    #         self.balance -= market_value
-    #         position.save()
-    #         trade.save()
-    #         self.save()
-    #         return True   

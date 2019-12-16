@@ -40,7 +40,7 @@ class Position:
             self.pk = cur.lastrowid
 
     def update(self):
-        ###TODO UPDATE total quantity and average price
+        ###TODO UPDATE total quantity
         """Updates an already existing pk in the database"""
         with sqlite3.connect(self.dbpath) as conn:
             cur = conn.cursor()
