@@ -1,6 +1,7 @@
 import sqlite3
-from settings import DBPATH
+from settings import DBPATH #TESTDBPATH for test
 import os
+
 
 
 def schema(dbpath=DBPATH):

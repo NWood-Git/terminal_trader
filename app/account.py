@@ -225,9 +225,9 @@ class Account:
             stock_mv = []
             for position in positions:
                 if position.total_quantity > 0:
-                    print(f"""Ticker: {position.ticker.upper()}     Quantity: {position.total_quantity}     Market Value: ${position.value()}""")
+                    print(f"""Ticker: {position.ticker.upper()}     Quantity: {position.total_quantity}     Market Value: ${round(position.value(),2)}""")
                     stock_mv.append(position.value())
-            print(f"\nTotal Market Value of Stock Holdings: ${sum(stock_mv)}")
+            print(f"\nTotal Market Value of Stock Holdings: ${round(sum(stock_mv),2)}")
             print(f"Cash Balance in Account: ${round(self.balance,2)}")
             print(f"Total Value of Your Portfolio: ${(sum(stock_mv)+round(self.balance,2))}\n\n")
 
@@ -263,7 +263,7 @@ class Account:
         for x in positions:
             if x.total_quantity > 0:
                 stock_mv.append(x.value())
-        print(f"Account pk: {account_pk}, Username: {username}, Total Stock Value: ${sum(stock_mv)}, Cash Balance: ${round(self.balance,2)}, Total Portfolio Value: ${(sum(stock_mv)+round(self.balance,2))}")
+        print(f"Account pk: {account_pk}, Username: {username}, Total Stock Value: ${round(sum(stock_mv),2)}, Cash Balance: ${round(self.balance,2)}, Total Portfolio Value: ${round(sum(stock_mv),2)+round(self.balance,2)}")
 
 
 
