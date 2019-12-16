@@ -163,13 +163,16 @@ class Account:
             else:
                 return None
     
-    def trade(self, ticker, quantity):
+    def trade(self, ticker, quantity, price = None):
         quantity = int(quantity)
         quote = get_quote(ticker)
-        if quote['iexAskPrice'] != 0 and quote['iexAskPrice'] is  not None: ##added the or
-            price = float(quote['iexAskPrice'])
-        else:
-            price= float(quote['latestPrice'])
+        if price == None:
+            if quote['iexAskPrice'] != 0 and quote['iexAskPrice'] is  not None: ##added the or
+                price = float(quote['iexAskPrice'])
+            else:
+                price= float(quote['latestPrice'])
+        else: #price != None
+            price = price
         market_value = price * quantity
         position = Position.from_account_and_ticker(self.pk, ticker)
         if market_value > 0:#BUY
@@ -261,10 +264,6 @@ class Account:
             if x.total_quantity > 0:
                 stock_mv.append(x.value())
         print(f"Account pk: {account_pk}, Username: {username}, Total Stock Value: ${sum(stock_mv)}, Cash Balance: ${round(self.balance,2)}, Total Portfolio Value: ${(sum(stock_mv)+round(self.balance,2))}")
-
-
-
-
 
 
 

@@ -46,7 +46,3 @@ class TestPosition(unittest.TestCase):
         self.assertIsInstance(result, Position, "pk returns instance of position")
         self.assertEqual(result.ticker,"aapl")
         self.assertIsNone(Position.from_pk(0),"Returns None for bad pk")
-        # result = Account.from_pk(jimid)
-        # self.assertIsInstance(result, Account, "from_pk returns an instance of an account")
-        # self.assertEqual(result.email,"jimmylove@gmail.com")
-        # self.assertIsNone(Account.from_pk(0), "from_pk returns None for bad pk")
